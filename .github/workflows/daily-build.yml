@@ -32,7 +32,7 @@ jobs:
         copy src\Release-x64\*.exe artifacts\
         
     - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4  # 从 v2 升级到最新 v4 版本
       with:
         name: daily-build-binaries
         path: artifacts/

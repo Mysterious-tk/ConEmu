@@ -965,6 +965,8 @@ void SettingsXML::CloseStorage() noexcept
 {
 	HANDLE hFile = nullptr;
 	bool bCanSave = false;
+	HANDLE hMutex = CreateMutex(nullptr, FALSE, L"ConEmu_SettingsXML_Mutex");
+    WaitForSingleObject(hMutex, INFINITE);
 
 	CloseKey();
 
@@ -1038,6 +1040,8 @@ void SettingsXML::CloseStorage() noexcept
 	mb_DataChanged = false;
 	mb_Empty = false;
 	mn_access = 0;
+	ReleaseMutex(hMutex);
+    CloseHandle(hMutex);
 }
 
 void SettingsXML::CloseKey() noexcept

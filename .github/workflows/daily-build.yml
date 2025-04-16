@@ -1,0 +1,38 @@
+name: Daily Build
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每天 UTC 时间 02:00（北京时间 10:00）
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    name: Build Verification
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+        fetch-depth: 1
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.0
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+    - name: Build Solution (x64 Release)
+      run: msbuild src\CE.sln /p:Platform="x64" /p:Configuration="Release" /m
+
+    - name: Collect Binaries
+      run: |
+        mkdir artifacts
+        copy src\Release-x64\*.exe artifacts\
+        
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: daily-build-binaries
+        path: artifacts/
